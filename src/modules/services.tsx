@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export interface IItem {
     id: number;
     title: string;
@@ -14,17 +16,14 @@ export interface IItemsResponse {
 }
 
 export const getItems = async (): Promise<IItem[]> =>{
-    return fetch(`http://localhost:8080/items`)
-        .then((response) => response.json())
+    return axios.get(`http://localhost:8080/items`)
+        .then((response) => response.data)
         .catch(()=> ({ items:[] }))
+
 }
 
 export const getItemsFilter = async (minPrice: string, maxPrice: string, material: string): Promise<IItem[]> =>{
-    return fetch(`http://localhost:8080/items?min=${minPrice}&max=${maxPrice}&material=${material}`)
-        .then((response) => response.json())
+    return axios.get(`http://localhost:8080/items?min=${minPrice}&max=${maxPrice}&material=${material}`)
+        .then((response) => response.data)
         .catch(()=> ({ items:[] }))
 }
-
-// await console.log(getItems())
-// let res = await getItems()
-// console.log(res)

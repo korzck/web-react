@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react'
 import ReactDOM from 'react-dom/client'
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { store } from './components/state/store';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  <>
       {/* <CookiesProvider> */}
       <Provider store={store}>
         <BrowserRouter>
@@ -16,5 +16,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </BrowserRouter>
       </Provider>
       {/* </CookiesProvider> */}
-  </React.StrictMode>,
+  </>,
 )

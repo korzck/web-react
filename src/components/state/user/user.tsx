@@ -2,56 +2,95 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 interface UserState {
     id: number
-    value: number
     isLogin: boolean
     name: string
+    tag: string
+    order: number
     minPrice: string
     maxPrice: string
     material: string
+    minDate: string
+    maxDate: string
+    status: string
+    userId: string
 }
 
 const initialState: UserState = {
     id: 0,
-    value: 0,
     isLogin: false,
+    tag: 'guest',
     name: 'guest',
+    order: 0,
     minPrice: '',
     maxPrice: '',
-    material: ''
+    material: '',
+    minDate: '',
+    maxDate: '',
+    status: 'pending',
+    userId: ''
 }
 
 const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        increment: (state) => {
-            state.value += 1
+        setName: (state, value: PayloadAction<string>) => {
+            state.name = value.payload
         },
-        setStoreName: (state, name: PayloadAction<string>) => {
-            state.name = name.payload
+        setEmail: (state, value: PayloadAction<string>) => {
+            state.name = value.payload
         },
-        setStoreEmail: (state, email: PayloadAction<string>) => {
-            state.name = email.payload
+        setIsLogin: (state, value: PayloadAction<boolean>) => {
+            state.isLogin = value.payload
         },
-        setIsLogin: (state, isLogin: PayloadAction<boolean>) => {
-            state.isLogin = isLogin.payload
+        setId: (state, value: PayloadAction<number>) => {
+            state.id = value.payload
         },
-        setId: (state, id: PayloadAction<number>) => {
-            state.id = id.payload
+        setMax: (state, value: PayloadAction<string>) => {
+            state.maxPrice = value.payload
         },
-        setMax: (state, id: PayloadAction<string>) => {
-            state.maxPrice = id.payload
+        setMin: (state, value: PayloadAction<string>) => {
+            console.log("changed to", value.payload)
+            state.minPrice = value.payload
         },
-        setMin: (state, id: PayloadAction<string>) => {
-            console.log("changed to", id.payload)
-            state.minPrice = id.payload
+        setMaterial: (state, value: PayloadAction<string>) => {
+            state.material = value.payload
         },
-        setMaterial: (state, id: PayloadAction<string>) => {
-            state.material = id.payload
+        setTag: (state, value: PayloadAction<string>) => {
+            state.tag = value.payload
+        },
+        setOrder: (state, value: PayloadAction<number>) => {
+            state.order = value.payload
+        },
+        setMaxDate: (state, value: PayloadAction<string>) => {
+            state.maxDate = value.payload
+        },
+        setMinDate: (state, value: PayloadAction<string>) => {
+            state.minDate = value.payload
+        },
+        setStatus: (state, value: PayloadAction<string>) => {
+            state.status = value.payload
+        },
+        setUserId: (state, value: PayloadAction<number>) => {
+            state.userId = value.payload
         }
     }
 })
 
-export const {setStoreName, setStoreEmail, setIsLogin, setId, setMax, setMin, setMaterial} = userSlice.actions
+export const {
+    setName, 
+    setEmail, 
+    setIsLogin, 
+    setId, 
+    setMax, 
+    setMin, 
+    setMaterial, 
+    setTag, 
+    setOrder,
+    setMaxDate,
+    setMinDate,
+    setStatus,
+    setUserId
+} = userSlice.actions
 
 export default userSlice.reducer

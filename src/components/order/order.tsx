@@ -1,128 +1,119 @@
-import { Badge, Button, Card, Col, Form, FormControl, InputGroup, Row, Spinner } from "react-bootstrap";
-import SubcardItem from "../orders/item";
+import { Button, Table } from "react-bootstrap";
+// import SubcardItem from "../orders/item";
 import { useEffect, useState } from "react";
-import { IOrder, IOrderItem, changeCartComment, changeOrderStatus, createNewOrder, getCart, getOrderInfo, getOrderItems } from "../../modules/order";
-import { useSelector } from "react-redux";
-import { RootState } from "../state/store";
-import { useNavigate } from "react-router-dom";
+// import { IOrder, IOrderItem, changeCartComment, changeOrderStatus, createNewOrder, getOrderInfo, getOrderItems } from "../../modules/order";
+// import { useSelector } from "react-redux";
+// import { RootState } from "../state/store";
+// import { useNavigate, useParams } from "react-router-dom";
+import { WebInternalModelsOrderSwagger } from "../../api/Api";
+import { api } from "../../api";
+import { useNavigate, useParams } from "react-router-dom";
+import './style.css';
+import { Trash } from "react-bootstrap-icons";
+import LoaderComponent from "./loader";
 
-export function Order({orderId}) {
-  const [order, setOrder] = useState<IOrder>([])
-  const [orderItems, setOrderItems] = useState<IOrderItem[]>([])
-  const [inputValue, setInputValue] = useState("");
-  const id = useSelector((state: RootState) => state.user.id)
-  const [loading, setLoading] = useState(false)
+export function Order() {
+  const { id } = useParams();
+  const [order, setOrder] = useState<WebInternalModelsOrderSwagger>()
+  const [loader, setLoader] = useState(false)
   const [total, setTotal] = useState(0)
-  const [dummy, setDummy] = useState(false)
+
   const navigate = useNavigate();
-  const callOrderItems = async () => {
-    setLoading(true)
-    const resp = await getOrderItems(orderId)
-    // console.log("got resp", orderObj)
-    resp.sort(function compare( a, b ) {
-      if ( a.model.id < b.model.id ){
-        return -1;
-      }
-      if ( a.model.id > b.model.id ){
-        return 1;
-      }
-      return 0;
-    })
-    setOrderItems(resp)
-    setLoading(false)
+  // const dispatch = useDispatch<AppDispatch>()
+
+  const getOrder = async () => {
+    if (id) {
+      const { data } = await api.orders.ordersDetail(String(id), {withCredentials: true})
+      data?.items?.sort(function compare( a, b ) {
+          if ( a.id < b.id ){
+            return -1;
+          }
+          if ( a.id > b.id ){
+            return 1;
+          }
+          return 0;
+        })
+      setOrder(data)
+    }
   }
-  const orderInfo = async () => {
-    const resp = await getOrderInfo(orderId)
-    setOrder(resp[0])
-    setInputValue(resp[0].comment)
+  useEffect(()=>{
+    getOrder()
+  },[])
+
+  const deleteItem = async (itemId: string) => {
+    const { data } = await api.orders.itemsDelete(itemId, {withCredentials: true})
+    setOrder(data)
   }
 
-  // useEffect(() => {
-  //   // cart()
-  // }, [])
+  const deleteOrder = async () => {
+    setLoader(true)
+    await api.orders.deleteDelete({withCredentials: true})
+    await new Promise(r => setTimeout(r, 500));
+    setOrder(undefined)
+    setLoader(false)
+    navigate("/services")
+  }
 
-  useEffect(() => {
-    let res = 0
-    orderItems.forEach(item => {
-      res += Number(item.model.price)*item.quantity
+  const makeOrder = async () => {
+    setLoader(true)
+    await api.orders.makeUpdate({withCredentials: true})
+    await new Promise(r => setTimeout(r, 500));
+    setLoader(false)
+    navigate("/services")
+  }
+
+  const getTotal = () => {
+    let newTotal = 0
+    order?.items?.forEach(item => {
+    console.log(newTotal)
+    newTotal += Number(item?.quantity) * Number(item.item?.price)
     });
-    // console.log("got res", res)
-    setTotal(res)
-  }, [orderItems])
-
-  useEffect(() => {
-    callOrderItems()
-    orderInfo()
-  }, [dummy])
-
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
-
-  const saveComment = async () => {
-    setLoading(true)
-    await changeCartComment(inputValue)
-    setLoading(false)
-    setDummy(!dummy)
-  };
-
-  const saveOrder = async () => {
-    // alert("saved!")
-    setLoading(true)
-    await changeOrderStatus("pending", orderId)
-    setLoading(false)
-    alert('Ваш заказ отправлен на рассмотрение, вы можете следить за его статусом в разделе "Заказы"')
-    const resp = await createNewOrder(id)
-    // console.log(resp)
-    navigate('/orders')
-  };
-
+    return newTotal
+  }
 
   return (
     <>
-      {orderId != undefined && order.comment != undefined && (orderItems.length > 0 || order.comment != "") &&
-      <Col key={orderId} sm={6} md={4} lg={10} style={{margin: 'auto', marginBottom: '20px'}}>
-        <Card>
-          <Card.Body>
-            <Card.Text>
-              <Form>
-                <InputGroup className="mb-3">
-                  <FormControl
-                    as={'textarea'}
-                    style={{height: '100'}}
-                    placeholder="Комментарий к заказу"
-                    onChange={handleInputChange}
-                    value={inputValue}
-                    />
-                  <InputGroup>
-                    <Button variant="outline-secondary" onClick={saveComment}>
-                      {loading && <Spinner animation="border" role="status">
-                        <span className="visually-hidden"></span>
-                      </Spinner>}
-                       Сохранить
-                    </Button>
-                  </InputGroup>
-                  <Card.Title>Комментарий к заказу: {order.comment}</Card.Title>
-                </InputGroup>
-              </Form>
+    
+    {(loader && <LoaderComponent />) ||
+    <>
+    {order && Number(order?.items?.length) > 0 ?
+  <div style={{display: 'flex', width: '100%', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', justifyItems: 'center', alignItems: 'center'}}>
+    <Table striped bordered hover responsive="md" className="table w-100">
+      <thead>
+        <tr>
+          <th>№ услуги</th>
+          <th>Название</th>
+          <th>Описание</th>
+          <th>Цена</th>
+          <th>Количество</th>
+          {order.status == "new" && <th></th>}
+        </tr>
+      </thead>
+      <tbody>
+        {order?.items?.map((item, index) => (
+          <tr key={index}>
+            <td>{item.item?.id}</td>
+            <td>{item.item?.title}</td>
+            <td>{item.item?.subtitle}</td>
+            <td>{item.item?.price} руб.</td>
+            <td>{item.quantity}</td>
+            {order.status == "new" &&<td><Button onClick={() => {deleteItem(String(item.id))}} variant="outline-success"><Trash /></Button></td>}
 
-            </Card.Text>
-            <Row>
-              <br />
-              <Badge style={{fontSize: '1rem'}}>Цена: {total} руб.</Badge>
-              <div><br /></div>
-              {orderItems.map(orderItem => (
-                <SubcardItem item={orderItem} func={callOrderItems} order={orderId} orderStatus={order.status} />
-              ))}
-            </Row>
-            
-          </Card.Body>
-        </Card>
-        <br />
-      </Col>}
-      {orderId == undefined || (orderItems.length == 0 && order.comment == "") && 
-        <h4 className="m-3">В заказе пусто!</h4>
-      }
-    </>
-  );
+          </tr>
+        ))}
+      </tbody>
+    </Table>
+    {order.status == "new" && <Button onClick={makeOrder} variant="success" className="m-3" style={{width: '200px'}}>Подтвердить заказ</Button>}
+    {order.status == "new" && <Button onClick={deleteOrder} variant="danger" className="m-3" style={{width: '200px'}}>Удалить заказ</Button>}
+    <h6 className="m-3 w-50" style={{textAlign: 'center'}}>Сумма заказа: {getTotal()} руб.</h6>
+
+  </div> : 
+    <div style={{display: 'flex', width: '100%', justifyContent: 'center', flexDirection: 'column', alignContent: 'center', justifyItems: 'center', alignItems: 'center'}}>
+      <h4 className="m-3 w-50" style={{textAlign: 'center'}}>В заказе пусто!</h4>
+    </div>
+  }
+  </>}
+
+  </>
+    );
 }

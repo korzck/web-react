@@ -1,30 +1,38 @@
 import { useState } from 'react';
 import { Form, Button, InputGroup, FormControl } from 'react-bootstrap';
 import { EnvelopeFill, LockFill } from 'react-bootstrap-icons';
-import { login } from '../../modules/auth';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../state/store';
-import { setId, setIsLogin, setStoreEmail } from '../state/user/user';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../api';
+import { setIsLogin, setEmail, setId, setTag, setName } from '../state/user/user';
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formEmail, setFormEmail] = useState('');
+  const [formPassword, setFormPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
   const dispatch = useDispatch<AppDispatch>()
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault(); 
     try {
-      const response = await login(email, password); 
-      dispatch(setStoreEmail(response?.email))
+      // const response = await login(email, password); 
+      const { data } = await api.login.loginCreate({ email: formEmail, password: formPassword },
+         {
+          withCredentials: true,
+         })
+      dispatch(setId(Number(data.id)))
+      dispatch(setTag(String(data.tags)))
+      dispatch(setName(String(data.name)))
+      dispatch(setEmail(String(data.email)))
       dispatch(setIsLogin(true))
-      dispatch(setId(response?.id))
-      navigate("/services");
-
+      navigate("/services")
     } catch (error) {
-      // alert('Error:' + error);
-      alert("Неверный пароль или логин!")
+      if (String(error).includes('40')) {
+        alert("Неверный пароль или логин!")
+      } else {
+        alert("Ошибка на стороне сервера, повторите попытку позже")
+      }
       setLoginError(true);
     }
   };
@@ -39,8 +47,8 @@ const LoginForm = () => {
             <FormControl
               type="email"
               placeholder="Логин"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formEmail}
+              onChange={(e) => setFormEmail(e.target.value)}
               isInvalid={loginError}
             />
           </InputGroup>
@@ -55,8 +63,8 @@ const LoginForm = () => {
             <FormControl
               type="password"
               placeholder="Пароль"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formPassword}
+              onChange={(e) => setFormPassword(e.target.value)}
               isInvalid={loginError}
             />
           </InputGroup>
@@ -65,7 +73,7 @@ const LoginForm = () => {
           </Form.Control.Feedback>
         </Form.Group>
 
-        <Button variant="primary" type="submit" style={{ width: "100%" }}>
+        <Button variant="success" type="submit" style={{ width: "100%" }}>
           Войти
         </Button>
       </Form>

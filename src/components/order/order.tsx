@@ -1,4 +1,4 @@
-import { Button, Table } from "react-bootstrap";
+import { Button, Form, FormGroup, InputGroup, Table } from "react-bootstrap";
 // import SubcardItem from "../orders/item";
 import { useEffect, useState } from "react";
 // import { IOrder, IOrderItem, changeCartComment, changeOrderStatus, createNewOrder, getOrderInfo, getOrderItems } from "../../modules/order";
@@ -7,10 +7,11 @@ import { useEffect, useState } from "react";
 // import { useNavigate, useParams } from "react-router-dom";
 import { WebInternalModelsOrderSwagger } from "../../api/Api";
 import { api } from "../../api";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import './style.css';
-import { Trash } from "react-bootstrap-icons";
+import { Save, Trash } from "react-bootstrap-icons";
 import LoaderComponent from "./loader";
+import { setUserId } from "../state/user/user";
 
 export function Order() {
   const { id } = useParams();
@@ -33,6 +34,7 @@ export function Order() {
           }
           return 0;
         })
+      console.log(data.items)
       setOrder(data)
     }
   }
@@ -43,6 +45,17 @@ export function Order() {
   const deleteItem = async (itemId: string) => {
     const { data } = await api.orders.itemsDelete(itemId, {withCredentials: true})
     setOrder(data)
+  }
+  const saveComment = async (event, itemId: number) => {
+    event.preventDefault()
+    // console.log(event.target[0].value)
+    // console.log("item is", itemId)
+
+    await api.orders.commentUpdate(String(order?.id), {
+      item_id: itemId,
+      comment: event.target[0].value
+    }, {withCredentials: true})
+    // getOrder()
   }
 
   const deleteOrder = async () => {
@@ -86,6 +99,7 @@ export function Order() {
           <th>Описание</th>
           <th>Цена</th>
           <th>Количество</th>
+          <th>Комментарий</th>
           {order.status == "new" && <th></th>}
         </tr>
       </thead>
@@ -93,11 +107,23 @@ export function Order() {
         {order?.items?.map((item, index) => (
           <tr key={index}>
             <td>{item.item?.id}</td>
-            <td>{item.item?.title}</td>
+            <td><Link to={"/services/"+item.id}>{item.item?.title}</Link></td>
             <td>{item.item?.subtitle}</td>
             <td>{item.item?.price} руб.</td>
             <td>{item.quantity}</td>
-            {order.status == "new" &&<td><Button onClick={() => {deleteItem(String(item.id))}} variant="outline-success"><Trash /></Button></td>}
+            <td>
+
+              <form onSubmit={(event) => {saveComment(event, Number(item.id))}} style={{display: 'flex'}}>
+                <Form.Control
+                name={String(item.id)}
+                as="textarea"
+                defaultValue={item.comment}
+                disabled={order.status != "new"}
+                className='' type="text" placeholder="Комментарий" id='' />
+                {order.status == "new" && <Button style={{maxHeight: "3rem"}} type="submit" variant="success"><Save /></Button>}
+              </form>
+            </td>
+            {order.status == "new" &&<td><Button onClick={() => {deleteItem(String(item.id))}} variant="outline-danger"><Trash /></Button></td>}
 
           </tr>
         ))}

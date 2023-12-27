@@ -1,6 +1,5 @@
-import React from 'react';
 import { Spinner } from 'react-bootstrap';
-import './LoaderComponent.css'; // Create a separate CSS file for styling
+// import './LoaderComponent.css'; // Create a separate CSS file for styling
 
 const LoaderComponent = () => {
   return (

@@ -26,7 +26,7 @@ const initialState: UserState = {
     material: '',
     minDate: '',
     maxDate: '',
-    status: 'pending',
+    status: 'all',
     userId: ''
 }
 

@@ -3,8 +3,8 @@ import { Form, InputGroup, FormControl, Button } from "react-bootstrap";
 import { EnvelopeFill, LockFill, PersonFill } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../state/store";
-import { signup } from "../../modules/auth";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../api";
 
 const SignupForm = () => {
     const [email, setEmail] = useState('');
@@ -16,9 +16,14 @@ const SignupForm = () => {
     const handleSignup = async (e) => {
       e.preventDefault(); 
       try {
-        const response = await signup(email, name, password); 
+        // const response = await signup(email, name, password); 
+        const { data } = await api.signup.signupCreate({
+            email,
+            name,
+            password,
+        })
         // dispatch(setStoreEmail(response?.email))
-        console.log("got signup", response)
+        console.log("got signup", data)
         // await createNewOrder(response?.id)
         alert("Вы успешно зарегистрировались, вы можете теперь зайти в аккаунт с заданной почтой и паролем")
         navigate("/login");
@@ -77,7 +82,7 @@ const SignupForm = () => {
           </Form.Group>
           
   
-          <Button variant="primary" type="submit" style={{ width: "100%" }}>
+          <Button variant="success" type="submit" style={{ width: "100%" }}>
             Зарегистрироваться
           </Button>
         </Form>

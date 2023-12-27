@@ -71,7 +71,7 @@ export function Services() {
   return (
     <>
       <div className="w-auto p-3">
-        <h1>Услуги, исполняемые на ЧПУ станках</h1>
+        <h1>Программы выполнения на ЧПУ-станках</h1>
       </div>
       <InputGroup className=''>
         <Form.Select
@@ -107,9 +107,9 @@ export function Services() {
       <Row xs={1} md={2} lg={4}>
         {items != undefined && items.items != undefined && items.items.length != 0 && items.items.map((item, index) => 
         <Col key={index}>
-        <Card style={{ width: '18rem', margin: '2rem', height: '32rem' }}>
+        <Card style={{ width: '22rem', margin: '2rem', height: '32rem' }}>
           {item.imgurl && item.imgurl != '' ?
-            <Card.Img variant="top" src={item.imgurl} style={{height:"18rem", width: '18rem'}} />
+            <Card.Img variant="top" src={item.imgurl} style={{height:"12rem", width: 'auto'}} />
             :
             <Card.Img variant="top" src={img} style={{height:"18rem", width: '18rem'}} />
           }
@@ -125,7 +125,7 @@ export function Services() {
             <br/>
             <Badge bg='success'> {mapMaterial(String(item.type))}</Badge>
             </Card.Text>
-            {tag == "user" && <Button variant="success" onClick={() => {add(Number(item.id))}} style={{marginRight: '10px'}}>Добавить</Button>}
+            <Button variant="success" onClick={() => {add(Number(item.id))}} style={{marginRight: '10px'}}>Добавить</Button>
             <Link to={`/services/`+item.id}><Button variant="outline-success" >Подробнее</Button></Link>
             </Card.Footer>
         </Card>

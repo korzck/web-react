@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { WebInternalModelsOrder } from "../../api/Api";
 import { api } from "../../api";
 import { Link } from "react-router-dom";
-import { useInterval } from "../../modules/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../state/store";
-import { setMaterial, setMin, setMax, setMaxDate, setMinDate, setStatus, setUserId } from "../state/user/user";
+import { setMaxDate, setMinDate, setStatus, setUserId } from "../state/user/user";
+import { useInterval } from "../../utils/utils";
 
 export function Orders() {
   const [orders, setOrders] = useState<WebInternalModelsOrder[]>()
@@ -28,6 +28,8 @@ export function Orders() {
         max_date: maxDate,
         status: status,
     }, {withCredentials: true})
+    // console.log(data)
+
     data.sort(function compare( a, b ) {
       if ( a.id > b.id ){
         return -1;
@@ -37,8 +39,12 @@ export function Orders() {
       }
       return 0;
     })
-    if (userId != 0) {
-      setOrders(filterByUser(data, userId))
+    console.log(data)
+
+    if (userId != "") {
+      setOrders(filterByUser(data, Number(userId)))
+      console.log("filtering")
+
     } else {
       setOrders(data)
     }
@@ -60,13 +66,19 @@ export function Orders() {
     return statusMap[status]
   }
 
-  const filterByUser = (orders: WebInternalModelsOrder[], userId: number) => {
+  const filterByUser = (orders: WebInternalModelsOrder[]) => {
     const filtered: WebInternalModelsOrder[] = []
+    // console.log("before filtered", orders)
+
     orders.forEach(order => {
-      if (order.user_id == userId) {
+      if (order.user_id == Number(userId)) {
         filtered.push(order)
       }
+      console.log("userId is ", userId, order)
     });
+    // console.log("filtered", orders)
+
+
     return filtered
   }
 
@@ -97,6 +109,7 @@ export function Orders() {
         }}
         aria-label='Статус закаказа (по умолчанию "В обработке")' className='m-3' id='status'>
           {/* <option>Статус закаказа (по умолчанию "В обработке")</option> */}
+          <option value="all">Все</option>
           <option value="pending">В обработке</option>
           <option value="approved">Принято</option>
           <option value="canceled">Отклонено</option>
@@ -109,7 +122,7 @@ export function Orders() {
         onChange={e => {
           dispatch(setUserId(Number(e.target.value)))
         }}
-        className='m-3' type="number" placeholder="ID пользователя" id='minDate' />
+        className='m-3' type="text" placeholder="ID пользователя" id='minDate' />
       </InputGroup>
     </div>}
     {tag != "admin" && <h4 className="m-3" style={{textAlign: 'center'}}>Ваши заказы</h4>}
@@ -120,6 +133,7 @@ export function Orders() {
         <tr>
           <th>№ заказа</th>
           {tag == "admin" && <th>ID пользователя</th>}
+          {tag == "admin" && <th>ID сотрудника</th>}
           <th>Статус</th>
           <th>Создан</th>
           <th>Обновлен</th>
@@ -132,15 +146,16 @@ export function Orders() {
           <tr key={index}>
             <td>{item?.id}</td>
             {tag == "admin" && <td>{item?.user_id}</td>}
+            {tag == "admin" && <td>{item.admin_id == 0 ? "-" : item.admin_id}</td>}
             <td>{mapStatus(String(item.status))}</td>
             <td>{String(item?.CreatedAt).slice(0, 10)}</td>
             <td>{String(item?.UpdatedAt).slice(0, 10)}</td>
             <td><Link to={"/orders/" + item.id}><Button onClick={() => {}} variant="outline-success">Подробнее</Button></Link></td>
             {item.status == "pending" && tag == "admin" && <td><Button onClick={() => {
-                api.orders.approveUpdate(String(item.id), {status: "approved"})
+                api.orders.approveUpdate(String(item.id), {status: "approved"}, {withCredentials: true})
             }} variant="success">Одобрить</Button></td>}
             {item.status == "pending" && tag == "admin" && <td><Button onClick={() => {
-                api.orders.approveUpdate(String(item.id), {status: "canceled"})
+                api.orders.approveUpdate(String(item.id), {status: "canceled"}, {withCredentials: true})
             }} variant="outline-danger">Отклонить</Button></td>}
 
           </tr>

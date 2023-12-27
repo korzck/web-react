@@ -34,7 +34,13 @@ export interface WebInternalModelsItem {
   url?: string;
 }
 
+export interface WebInternalModelsItemCommentSwagger {
+  comment?: string;
+  item_id?: number;
+}
+
 export interface WebInternalModelsItemInOrderSwagger {
+  comment?: string;
   id?: number;
   item?: WebInternalModelsItem;
   quantity?: number;
@@ -67,7 +73,7 @@ export interface WebInternalModelsItemsSwagger {
 }
 
 export interface WebInternalModelsOrder {
-  comment?: string;
+  admin_id?: number;
   createdAt?: string;
   deletedAt?: GormDeletedAt;
   id?: number;
@@ -517,6 +523,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/orders/${id}/approve`,
         method: "PUT",
         body: status,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags orders
+     * @name CommentUpdate
+     * @summary Delete item from current order
+     * @request PUT:/orders/{id}/comment
+     */
+    commentUpdate: (id: string, comment: WebInternalModelsItemCommentSwagger, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/orders/${id}/comment`,
+        method: "PUT",
+        body: comment,
         type: ContentType.Json,
         ...params,
       }),

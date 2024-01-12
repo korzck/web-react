@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Form, Image } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
 import Loader from './loader';
@@ -35,7 +36,7 @@ export function AdminItem() {
 
     const [image, setImage] = useState(null);
     const [imageFile, setImageFile] = useState(null);
-    const handleImageChange = (e) => {
+    const handleImageChange = (e: { target: { files: any[]; }; }) => {
       const file = e.target.files[0];
       setImageFile(file)
       const reader = new FileReader();

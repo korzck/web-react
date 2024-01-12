@@ -100,7 +100,11 @@ definitions:
         items:
           $ref: '#/definitions/web_internal_models.Item'
         type: array
+      length:
+        type: integer
       order_id:
+        type: integer
+      page_size:
         type: integer
     type: object
   web_internal_models.Order:
@@ -111,6 +115,8 @@ definitions:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
       id:
         type: integer
       status:
@@ -129,6 +135,8 @@ definitions:
     type: object
   web_internal_models.OrderSwagger:
     properties:
+      email:
+        type: string
       id:
         type: integer
       items:
@@ -193,7 +201,7 @@ definitions:
 externalDocs:
   description: Курс РИП ИУ5
   url: https://github.com/iu5git/Web/
-host: localhost:8080
+host: 192.168.160.14:8080
 info:
   contact:
     email: konstantin.koretskiy@gmail.com
@@ -219,6 +227,16 @@ paths:
         format: text
         in: query
         name: max
+        type: string
+      - description: filter by title
+        format: text
+        in: query
+        name: title
+        type: string
+      - description: page
+        format: text
+        in: query
+        name: page
         type: string
       - description: filter by material (wood/metal)
         format: text

@@ -1,28 +1,33 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../state/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../state/store";
 import { Button, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { api } from "../../api";
 import { setOrder } from "../state/user/user";
 import { WebInternalModelsItemsSwagger } from "../../api/Api";
+import { Pages } from "../pages/pages";
 
 export const AdminItems = () => {
     const [items, setItems] = useState<WebInternalModelsItemsSwagger>();
     const dispatch = useDispatch<AppDispatch>()
-
+    const [pageSize] = useState(0)
+    const [length] = useState(0)
+    const page = useSelector((state: RootState) => state.user.page)
     const search = async() => {
       const { data } = await api.items.itemsList({
         min: "",
         max: "",
         material: "",
+        page: String(page),
       }, {withCredentials: true})
 
       data?.items?.sort(function compare( a, b ) {
-        if ( a.id > b.id ){
+        if ( Number(a.id) > Number(b.id) ){
           return -1;
         }
-        if ( a.id < b.id ){
+        if ( Number(a.id) < Number(b.id) ){
           return 1;
         }
         return 0;
@@ -40,12 +45,25 @@ export const AdminItems = () => {
         search()
     }, [])
 
+    useEffect(() => {
+      search()
+    }, [page])
+
     const mapMaterial = (material: string) => {
       if (material == "wood") {
           return "дерево"
       }
       if (material == "metal") {
           return "металл"
+      }
+      if (material == "wire") {
+        return "проволка"
+      }
+      if (material == "alloy") {
+        return "сплав"
+      }
+      if (material == "clean") {
+        return "чистый металл"
       }
     }
 
@@ -83,7 +101,7 @@ export const AdminItems = () => {
                   )}
                 </tbody>
               </Table>
-            
+              <Pages length={length} pageSize={pageSize}/>
         </div>
     )
 }

@@ -9,10 +9,12 @@ interface UserState {
     minPrice: string
     maxPrice: string
     material: string
+    page: number
+    title: string
     minDate: string
     maxDate: string
     status: string
-    userId: string
+    userEmail: string
 }
 
 const initialState: UserState = {
@@ -24,10 +26,12 @@ const initialState: UserState = {
     minPrice: '',
     maxPrice: '',
     material: '',
+    page: 1,
+    title: '',
     minDate: '',
     maxDate: '',
     status: 'all',
-    userId: ''
+    userEmail: ''
 }
 
 const userSlice = createSlice({
@@ -71,8 +75,14 @@ const userSlice = createSlice({
         setStatus: (state, value: PayloadAction<string>) => {
             state.status = value.payload
         },
-        setUserId: (state, value: PayloadAction<number>) => {
-            state.userId = value.payload
+        setUserEmail: (state, value: PayloadAction<string>) => {
+            state.userEmail = value.payload
+        },
+        setPage: (state, value: PayloadAction<number>) => {
+            state.page = value.payload
+        },
+        setTitle: (state, value: PayloadAction<string>) => {
+            state.title = value.payload
         }
     }
 })
@@ -90,7 +100,9 @@ export const {
     setMaxDate,
     setMinDate,
     setStatus,
-    setUserId
+    setUserEmail,
+    setPage,
+    setTitle
 } = userSlice.actions
 
 export default userSlice.reducer

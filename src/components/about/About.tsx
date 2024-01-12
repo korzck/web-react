@@ -1,9 +1,14 @@
-import { Container, Button, Col, Row } from 'react-bootstrap';
+import { Container, Col, Row } from 'react-bootstrap';
 import './HeadingSection.css'; 
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function About() {
-  // useEffect(() => {
-  // }, [])
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate("/services")
+  })
   // getItemsRequest()
   return (
     <>

@@ -1,12 +1,13 @@
-import { Badge, Button, Card, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
+import { Badge, Button, Card, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../state/store';
-import { setMaterial, setMax, setMin, setOrder } from '../state/user/user';
+import { setMaterial, setMax, setMin, setOrder, setPage, setTitle } from '../state/user/user';
 import { Link } from 'react-router-dom';
 import { api } from '../../api';
 import { WebInternalModelsItemsSwagger } from '../../api/Api';
 import img from '../../assets/img.webp';
+import { Pages } from '../pages/pages';
   
 export function Services() {
 
@@ -15,20 +16,23 @@ export function Services() {
   const maxPrice = useSelector((state: RootState) => state.user.maxPrice)
   const minPrice = useSelector((state: RootState) => state.user.minPrice)
   const material = useSelector((state: RootState) => state.user.material)
-  const tag = useSelector((state: RootState) => state.user.tag)
-  // const [dummy, setDummy] = useState(false)
-
-  // const [itemsMap, setItemMap] = useState({})
+  const page = useSelector((state: RootState) => state.user.page)
+  const title = useSelector((state: RootState) => state.user.title)
+  const isLogin = useSelector((state: RootState) => state.user.isLogin)
 
   const dispatch = useDispatch<AppDispatch>()
   const [dummy, setDummy] = useState(false)
-  
+  const [pageSize, setPageSize] = useState(0)
+  const [length, setLength] = useState(0)
+
 
   const search = async() => {
     const { data } = await api.items.itemsList({
       min: minPrice,
       max: maxPrice,
       material: material,
+      page: String(page),
+      title: title,
     }, {withCredentials: true})
 
     setItems(data)
@@ -37,6 +41,8 @@ export function Services() {
     } else {
       dispatch(setOrder(0))
     }
+    setLength(data.length)
+    setPageSize(data.page_size)
   }
 
   const add = async (id: number) => {
@@ -53,18 +59,29 @@ export function Services() {
     if (material == "metal") {
         return "металл"
     }
+    if (material == "wire") {
+      return "проволка"
+    }
+    if (material == "alloy") {
+      return "сплав"
+    }
+    if (material == "clean") {
+      return "чистый металл"
+    }
   }
 
 
   useEffect(()=>{
     search()
-  },[dummy])
+  },[dummy, page])
   
 
   const clear = () => {
     dispatch(setMin(''))
     dispatch(setMax(''))
     dispatch(setMaterial(''))
+    dispatch(setTitle(''))
+    dispatch(setPage(1))
     setDummy(!dummy)
   }
 
@@ -83,6 +100,9 @@ export function Services() {
         aria-label="Выберите материал" className='m-3' id='material'>
           <option>Выберите материал</option>
           <option value="metal">Металл</option>
+          <option value="wire">Проволка</option>
+          <option value="alloy">Сплавы</option>
+          <option value="clean">Чистый металл</option>
           <option value="wood">Дерево</option>
         </Form.Select>
       </InputGroup>
@@ -100,6 +120,13 @@ export function Services() {
           dispatch(setMax(e.target.value))
         }}
         className='m-3' type="number" placeholder="Максимальная цена" id='maxPrice'/>
+
+        <Form.Control
+        value={title}
+        onChange={e => {
+          dispatch(setTitle(e.target.value))
+        }}
+        className='m-3' type="text" placeholder="Название" id='title'/>
       </InputGroup>
       <Button variant='success' className='m-3 w-25' onClick={search}>Искать</Button>
       <Button variant='outline-success' className='m-3 w-25' onClick={clear}>Очистить фильтры</Button>
@@ -125,7 +152,7 @@ export function Services() {
             <br/>
             <Badge bg='success'> {mapMaterial(String(item.type))}</Badge>
             </Card.Text>
-            <Button variant="success" onClick={() => {add(Number(item.id))}} style={{marginRight: '10px'}}>Добавить</Button>
+            {isLogin &&  <Button variant="success" onClick={() => {add(Number(item.id))}} style={{marginRight: '10px'}}>Добавить</Button>}
             <Link to={`/services/`+item.id}><Button variant="outline-success" >Подробнее</Button></Link>
             </Card.Footer>
         </Card>
@@ -134,6 +161,7 @@ export function Services() {
         )}
       {/* </Container> */}
       </Row>
+      <Pages length={length} pageSize={pageSize}/>
     </>
   );
 }

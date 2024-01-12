@@ -69,13 +69,16 @@ export interface WebInternalModelsItemPrototype {
 
 export interface WebInternalModelsItemsSwagger {
   items?: WebInternalModelsItem[];
+  length?: number;
   order_id?: number;
+  page_size?: number;
 }
 
 export interface WebInternalModelsOrder {
   admin_id?: number;
   createdAt?: string;
   deletedAt?: GormDeletedAt;
+  email?: string;
   id?: number;
   status?: string;
   updatedAt?: string;
@@ -88,6 +91,7 @@ export interface WebInternalModelsOrderStatusSwagger {
 }
 
 export interface WebInternalModelsOrderSwagger {
+  email?: string;
   id?: number;
   items?: WebInternalModelsItemInOrderSwagger[];
   status?: string;
@@ -170,7 +174,7 @@ export class HttpClient<SecurityDataType = unknown> {
   private format?: ResponseType;
 
   constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "//localhost:8080" });
+    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "//192.168.160.14:8080" });
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;
@@ -260,7 +264,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @title Система заявок на производстве
  * @version 1.0
  * @license Apache 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html)
- * @baseUrl //localhost:8080
+ * @baseUrl //192.168.160.14:8080
  * @externalDocs https://github.com/iu5git/Web/
  * @contact Корецкий К.В. <konstantin.koretskiy@gmail.com> (https://github.com/korzck)
  */
@@ -286,6 +290,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @format text
          */
         max?: string;
+        /**
+         * filter by title
+         * @format text
+         */
+        title?: string;
+        /**
+         * page
+         * @format text
+         */
+        page?: string;
         /**
          * filter by material (wood/metal)
          * @format text

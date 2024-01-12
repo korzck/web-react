@@ -34,7 +34,7 @@ export default function TopMenu() {
                 <Navbar.Brand>ЧПУ производство</Navbar.Brand>
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me">
-                      <Link to="/" style={{color: 'white', textDecoration: 'underline', margin: "10px"}}>О компании</Link>
+                      {/* <Link to="/" style={{color: 'white', textDecoration: 'underline', margin: "10px"}}>О компании</Link> */}
                       <Link to="/services" style={{color: 'white', textDecoration: 'underline', margin: "10px"}}>ЧПУ-программы</Link>
                       {/* <Nav.Link href="/contacts">Контакты</Nav.Link> */}
                       {/* {isLogin && tag != "admin" && <Link to="/orders" style={{color: 'white', textDecoration: 'underline', margin: "10px"}}>Мои заказы</Link>} */}

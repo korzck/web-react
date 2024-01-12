@@ -15,7 +15,16 @@ export function ServicePage() {
         if (material == "metal") {
             return "металл"
         }
-    }
+        if (material == "wire") {
+          return "проволка"
+        }
+        if (material == "alloy") {
+          return "сплав"
+        }
+        if (material == "clean") {
+          return "чистый металл"
+        }
+      }
 
     const getItem = async () => {
         if (id && Number(id) != 0) {

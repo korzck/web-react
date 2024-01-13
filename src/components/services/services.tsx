@@ -8,7 +8,7 @@ import { api } from '../../api';
 import { WebInternalModelsItemsSwagger } from '../../api/Api';
 import img from '../../assets/img.webp';
 import { Pages } from '../pages/pages';
-import { mockItems } from '../../utils/mockItems';
+import { filterByName, filterByPrice, filterByType, mockItems } from '../../utils/mockItems';
 import { AxiosResponse } from 'axios';
 
 export function Services() {
@@ -41,6 +41,10 @@ export function Services() {
       data = resp?.data
     } catch (error) {
       data = mockItems()
+      data.items = filterByName(data.items, title)
+      data.items = filterByType(data.items, material)
+
+      data.items = filterByPrice(data.items, maxPrice, minPrice)
     }
     setItems(data)
     // console.log(data)
@@ -118,12 +122,14 @@ export function Services() {
       <InputGroup>
         <Form.Control
         value={minPrice}
+        min={0}
         onChange={e => {
           dispatch(setMin(e.target.value))
         }}
         className='m-3' type="number" placeholder="Минимальная цена" id='minPrice' />
         <Form.Control
         value={maxPrice}
+        min={0}
         onChange={e => {
           dispatch(setMax(e.target.value))
         }}

@@ -43,6 +43,7 @@ export function ServicePage() {
 
     useEffect(()=>{
         getItem()
+        console.log(item)
     }, [])
 
     return (

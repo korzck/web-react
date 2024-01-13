@@ -41,6 +41,7 @@ export function MyApp() {
 
 
   const routes =[
+      <Route path="/web-react/" element={<About />} />,
       <Route path="/" element={<About />} />,
       <Route path="/services" element={<Services />} />,
       <Route path="/services/:id" element={<ServicePage />} />,

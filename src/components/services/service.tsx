@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../../api'
 import { useParams } from 'react-router-dom'
 import { WebInternalModelsItemModel } from '../../api/Api';
+import { mockItem } from '../../utils/mockItems';
 
 
 export function ServicePage() {
@@ -27,11 +28,17 @@ export function ServicePage() {
       }
 
     const getItem = async () => {
-        if (id && Number(id) != 0) {
-            const { data } = await api.items.itemsDetail(id)
-            console.log(data)
-            setItem(data)
+        if (id && Number(id) == 0) {
+            return
         }
+        let data: WebInternalModelsItemModel | undefined
+        try {
+            const resp = await api.items.itemsDetail(id)
+            data = resp.data
+        } catch (error) {
+            data = mockItem(Number(id))
+        }
+        setItem(data)
     }
 
     useEffect(()=>{

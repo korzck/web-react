@@ -174,7 +174,7 @@ export class HttpClient<SecurityDataType = unknown> {
   private format?: ResponseType;
 
   constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "//192.168.160.14:8080" });
+    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "//localhost:8080" });
     this.secure = secure;
     this.format = format;
     this.securityWorker = securityWorker;
@@ -264,7 +264,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @title Система заявок на производстве
  * @version 1.0
  * @license Apache 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html)
- * @baseUrl //192.168.160.14:8080
+ * @baseUrl //localhost:8080
  * @externalDocs https://github.com/iu5git/Web/
  * @contact Корецкий К.В. <konstantin.koretskiy@gmail.com> (https://github.com/korzck)
  */

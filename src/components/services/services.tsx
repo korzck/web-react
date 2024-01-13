@@ -8,7 +8,9 @@ import { api } from '../../api';
 import { WebInternalModelsItemsSwagger } from '../../api/Api';
 import img from '../../assets/img.webp';
 import { Pages } from '../pages/pages';
-  
+import { mockItems } from '../../utils/mockItems';
+import { AxiosResponse } from 'axios';
+
 export function Services() {
 
   const [items, setItems] = useState<WebInternalModelsItemsSwagger>();
@@ -27,15 +29,21 @@ export function Services() {
 
 
   const search = async() => {
-    const { data } = await api.items.itemsList({
-      min: minPrice,
-      max: maxPrice,
-      material: material,
-      page: String(page),
-      title: title,
-    }, {withCredentials: true})
-
+    let data: WebInternalModelsItemsSwagger | AxiosResponse<WebInternalModelsItemsSwagger, unknown>
+    try {
+        let resp  = await api.items.itemsList({
+        min: minPrice,
+        max: maxPrice,
+        material: material,
+        page: String(page),
+        title: title,
+      }, {withCredentials: true})
+      data = resp?.data
+    } catch (error) {
+      data = mockItems()
+    }
     setItems(data)
+    // console.log(data)
     if (Number(data.order_id) != 0) {
       dispatch(setOrder(Number(data.order_id)))
     } else {

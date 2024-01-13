@@ -201,7 +201,7 @@ definitions:
 externalDocs:
   description: Курс РИП ИУ5
   url: https://github.com/iu5git/Web/
-host: 192.168.160.14:8080
+host: localhost:8080
 info:
   contact:
     email: konstantin.koretskiy@gmail.com

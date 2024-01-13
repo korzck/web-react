@@ -42,7 +42,6 @@ export function ServicePage() {
     }
 
     useEffect(()=>{
-        // const { data } =
         getItem()
     }, [])
 
